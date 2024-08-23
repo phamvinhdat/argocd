@@ -1,0 +1,5 @@
+# Test ArgoCD
+
+## Required
+
+- minikube

@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: data-platform
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - git:
+        repoURL: https://github.com/phamvinhdat/argocd.git
+        revision: master
+        directories:
+          - path: apps/data-platform/*
+  template:
+    metadata:
+      name: "data-platform-{{path.basename}}"
+      namespace: argocd
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/phamvinhdat/argocd.git
+        targetRevision: master
+        path: "{{path}}"
+      destination:
+        name: in-cluster
+        namespace: data-platform
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: true
+      ignoreDifferences:
+        - group: apps
+          kind: Deployment
+          namespace: data-platform
+          jsonPointers:
+            - /spec/replicas
